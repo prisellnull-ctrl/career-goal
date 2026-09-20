@@ -4,56 +4,50 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Цели</title>
-<meta name="theme-color" content="#F1F2F4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#12151C" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0D111A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Цели">
 <style>
 :root{
-  --bg:#F1F2F4; --surface:#FFFFFF; --ink:#171B26; --ink2:#5A6272; --line:#DADDE3;
-  --accent:#2F4BE0; --on-accent:#FFFFFF; --late:#C2372F; --done:#2C7A55; --track:#E3E6EB;
+  color-scheme:dark;
+  --bg:#0D111A; --surface:#151B28; --surface2:#1D2535; --ink:#E9ECF3; --ink2:#98A2B8; --line:#252E44;
+  --accent:#8DA2FF; --on-accent:#0B1020; --late:#FF847A; --done:#5CCB9C; --track:#283249;
   --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#12151C; --surface:#1A1F29; --ink:#E7E9EE; --ink2:#9AA2B1; --line:#2A3040;
-    --accent:#8299FF; --on-accent:#0E1220; --late:#FF7B72; --done:#5CC79A; --track:#2A3040;
-  }
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
-*{touch-action:manipulation}
-body{-webkit-user-select:none;user-select:none}
-input,textarea{-webkit-user-select:text;user-select:text}
-html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+*{box-sizing:border-box;touch-action:manipulation}
+html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none;background:var(--bg)}
 body{
   margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);
+  -webkit-user-select:none;user-select:none;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
+html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+input,textarea,.note-full{-webkit-user-select:text;user-select:text}
 button,input,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{max-width:640px;margin:0 auto;padding:0 16px 120px}
 
 header{
-  position:sticky;top:0;z-index:5;background:var(--bg);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 0 10px;
+  position:sticky;top:0;z-index:5;background:var(--bg);min-height:72px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 0 10px;
 }
 h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:700}
 
 .btn{
-  border:1px solid var(--line);background:var(--surface);border-radius:8px;
+  border:1px solid var(--line);background:var(--surface2);border-radius:8px;
   padding:0 14px;min-height:44px;cursor:pointer;
 }
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
 .btn.danger{color:var(--late)}
 .btn.small{min-height:36px;padding:0 12px;font-size:14px}
 .btn.link{border:0;background:none;padding:0 4px;color:var(--ink2);min-height:36px;text-decoration:underline;text-underline-offset:3px}
-.btn[hidden]{display:none}
 .btn[disabled]{opacity:.45;cursor:default}
 
 .tabs{display:flex;gap:16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
@@ -62,10 +56,11 @@ h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:70
   background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;
   padding:10px 0;min-height:44px;color:var(--ink2);cursor:pointer;
 }
-.tab[aria-pressed="true"]{color:var(--ink);border-color:var(--ink);font-weight:600}
+.tab[aria-pressed="true"]{color:var(--ink);border-color:var(--accent);font-weight:600}
 .count{font-variant-numeric:tabular-nums;color:var(--ink2);font-weight:400;margin-left:4px}
 
 .note{font-size:13px;color:var(--ink2);margin:14px 0 10px}
+.sub{font-size:14px;font-weight:600;color:var(--ink2);margin:20px 0 8px}
 .group{margin-top:22px}
 .group h2{font-size:14px;font-weight:600;color:var(--ink2);margin:0 0 8px}
 .group.late h2{color:var(--late)}
@@ -102,70 +97,108 @@ h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:70
   margin:12px 12px 12px 0;background:var(--track);
 }
 
+/* свайпы в хранилище */
+.swipe{position:relative;overflow:hidden}
+.swipe-bg{position:absolute;inset:0;display:flex;align-items:center;padding:0 22px;font-weight:600;opacity:0}
+.swipe-bg.r{background:var(--accent);color:var(--on-accent);justify-content:flex-start}
+.swipe-bg.l{background:var(--late);color:#240A07;justify-content:flex-end}
+.swipe-fg{position:relative;background:var(--surface);touch-action:pan-y;will-change:transform}
+.swipe-fg.snap{transition:transform .2s ease}
+
 .detail{padding:0 14px 14px 82px}
 .detail.wide{padding-left:14px}
 .detail textarea{min-height:88px;max-height:50vh}
-.compose{display:flex;flex-direction:column;gap:8px;margin:16px 0 18px}
-.compose textarea{min-height:88px}
-.compose .btn{align-self:flex-end}
-.note-head{display:block;width:100%;padding:13px 14px;text-align:left;background:none;border:0;cursor:pointer}
-.note-head:focus-visible{outline-offset:-2px}
-.note-text{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
-.pin{color:var(--accent);font-weight:600}
 .cover{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin:0 0 12px;background:var(--track)}
 .kv{font-size:14px;margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
 .kv span{display:block;font-size:13px;color:var(--ink2)}
 .steps{list-style:none;margin:6px 0 0;padding:0}
 .steps li{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
 .steps input[type=checkbox]{width:22px;height:22px;flex:none;margin:0;accent-color:var(--accent);cursor:pointer}
+.steps input[type=checkbox]:disabled{cursor:default;opacity:.6}
 .steps label{flex:1;padding-top:1px;overflow-wrap:anywhere;cursor:pointer}
 .steps .off label{color:var(--ink2);text-decoration:line-through}
 .plain{margin:4px 0 0;padding-left:18px;font-size:14px;overflow-wrap:anywhere}
 .addstep{display:flex;gap:8px;margin-top:8px}
 .addstep input{flex:1;min-width:0}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.detail .hint{margin-top:8px}
 
 input[type=text],input[type=date],input[type=number],textarea{
   width:100%;font-size:16px;padding:10px 12px;min-height:44px;
   border:1px solid var(--line);border-radius:8px;background:var(--bg);
 }
 textarea{min-height:76px;resize:vertical}
-input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,textarea:focus{border-color:var(--accent)}
+input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,textarea:focus{border-color:var(--accent);outline:none}
 
 .empty{padding:56px 8px;text-align:center}
 .empty h2{font-size:18px;margin:0 0 6px}
 .empty p{max-width:36ch;margin:0 auto 18px;color:var(--ink2)}
 
+/* заметки и папки */
+.compose{display:flex;flex-direction:column;gap:8px;margin:16px 0 18px}
+.compose textarea{min-height:88px;background:var(--surface)}
+.compose .btn{align-self:flex-end}
+.note-head{display:block;width:100%;padding:13px 14px;text-align:left;background:none;border:0;cursor:pointer}
+.note-head:focus-visible{outline-offset:-2px}
+.note-text{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
+.note-full{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.pin{color:var(--accent);font-weight:600}
+.folders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+.folder{
+  display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  overflow:hidden;padding:0;text-align:left;cursor:pointer;
+}
+.fcover{display:grid;place-items:center;aspect-ratio:4/3;background:var(--surface2);color:var(--ink2)}
+.fcover img{width:100%;height:100%;object-fit:cover;display:block}
+.fname{display:block;padding:10px 12px 0;font-weight:600;overflow-wrap:anywhere}
+.fcount{display:block;padding:2px 12px 12px;font-size:13px;color:var(--ink2)}
+.ftitle{display:flex;gap:12px;align-items:center;margin:14px 0 4px}
+.fth{width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--surface2);display:grid;place-items:center;color:var(--ink2);flex:none}
+.fth img{width:100%;height:100%;object-fit:cover;display:block}
+.ftitle h2{margin:0;font-size:20px;overflow-wrap:anywhere}
+.ftitle p{margin:2px 0 0;font-size:13px;color:var(--ink2)}
+
 footer{margin-top:40px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--ink2)}
 footer p{flex-basis:100%;margin:0 0 4px}
-footer[hidden],#install[hidden]{display:none}
+#install[hidden]{display:none}
 
 .toast{
   position:fixed;left:50%;transform:translateX(-50%);z-index:20;
   bottom:calc(20px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px);
   display:flex;align-items:center;gap:14px;padding:11px 16px;border-radius:10px;
-  background:var(--ink);color:var(--bg);font-size:14px;
+  background:var(--surface2);color:var(--ink);border:1px solid var(--line);
+  box-shadow:0 8px 28px rgba(0,0,0,.55);font-size:14px;
 }
 .toast[hidden]{display:none}
-.toast button{background:none;border:0;padding:6px 0;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600;white-space:nowrap}
+.toast button{background:none;border:0;padding:6px 0;color:var(--accent);cursor:pointer;font-weight:600;white-space:nowrap}
 
+/* диалоги */
 dialog{
-  border:0;padding:0;border-radius:14px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);padding:0;border-radius:14px;background:var(--surface);color:var(--ink);
   width:min(560px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);overflow:hidden;
-  box-shadow:0 24px 64px rgba(0,0,0,.3);touch-action:pan-y;overscroll-behavior:contain;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);touch-action:pan-y;overscroll-behavior:none;
 }
 dialog[open]{display:flex;flex-direction:column}
-dialog::backdrop{background:rgba(10,12,18,.55)}
+dialog::backdrop{background:rgba(3,5,10,.72)}
+dialog.small{width:min(380px,calc(100vw - 32px));padding:20px}
+dialog.small p{margin:0}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.picklist{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.pick{width:100%;text-align:left}
 form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 .fhead{flex:none;padding:18px 20px 12px}
 .fhead h2{font-size:19px;margin:0}
+#dlg-title:focus{outline:none}
 .fhead .hint{margin:6px 0 0}
-.fbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:8px 20px 4px}
+.fbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:none;-webkit-overflow-scrolling:touch;padding:8px 20px 4px}
+.foot{
+  flex:none;display:flex;justify-content:flex-end;gap:8px;background:var(--surface);
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+}
 .field{margin-bottom:18px}
 .field>label,.field>.lbl{display:block;font-weight:600;margin-bottom:6px}
-.field[hidden]{display:none}
+.field[hidden],.hint[hidden]{display:none}
 .hint{font-size:13px;color:var(--ink2);margin:5px 0 0}
-.hint[hidden]{display:none}
 .err{font-size:13px;color:var(--late);margin:5px 0 0}
 .err:empty{display:none}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -181,7 +214,6 @@ form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 }
 .imgprev img{width:100%;height:100%;object-fit:cover;display:block}
 .imgbtns{display:flex;flex-wrap:wrap;gap:8px}
-.foot{flex:none;display:flex;justify-content:flex-end;gap:8px;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
 
 @media (max-width:420px){
   .detail{padding-left:14px}
@@ -191,9 +223,9 @@ form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
   .tab{font-size:14px}
 }
 @media (max-width:600px){
-  dialog{
+  #dlg{
     width:100%;max-width:100%;max-height:none;height:var(--vh,100dvh);
-    margin:0;top:var(--vt,0px);bottom:auto;left:0;right:0;border-radius:0;
+    margin:0;top:var(--vt,0px);bottom:auto;left:0;right:0;border-radius:0;border:0;
   }
   .fhead{padding-top:calc(14px + env(safe-area-inset-top))}
 }
@@ -230,69 +262,70 @@ form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 <dialog id="dlg" aria-labelledby="dlg-title">
   <form id="form" novalidate>
     <div class="fhead">
-      <h2 id="dlg-title">Новая цель</h2>
+      <h2 id="dlg-title" tabindex="-1" autofocus>Новая цель</h2>
       <p class="hint" id="dlg-note" hidden></p>
     </div>
 
     <div class="fbody">
-    <div class="field">
-      <label for="f-title">Цель</label>
-      <input type="text" id="f-title" maxlength="140" autocomplete="off" placeholder="Получить права категории B">
-      <p class="err" id="e-title" aria-live="polite"></p>
-    </div>
-
-    <div class="field">
-      <label for="f-result">Как пойму, что цель достигнута</label>
-      <textarea id="f-result" maxlength="400" placeholder="Сдал экзамен в ГИБДД, права на руках"></textarea>
-      <p class="hint" id="h-result"></p>
-      <p class="err" id="e-result" aria-live="polite"></p>
-    </div>
-
-    <div class="field" id="fld-deadline">
-      <label for="f-deadline">Срок</label>
-      <input type="date" id="f-deadline">
-      <div class="chips" id="chips">
-        <button type="button" class="chip" data-days="14">2 недели</button>
-        <button type="button" class="chip" data-months="1">1 месяц</button>
-        <button type="button" class="chip" data-months="3">3 месяца</button>
-        <button type="button" class="chip" data-months="6">6 месяцев</button>
+      <div class="field">
+        <label for="f-title" id="l-title">Цель</label>
+        <input type="text" id="f-title" maxlength="140" autocomplete="off" placeholder="Получить права категории B">
+        <p class="err" id="e-title" aria-live="polite"></p>
       </div>
-      <p class="err" id="e-deadline" aria-live="polite"></p>
-    </div>
 
-    <div class="field" id="fld-days" hidden>
-      <label for="f-days">Сколько времени понадобится, дней</label>
-      <input type="number" id="f-days" inputmode="numeric" min="1" max="3650" placeholder="Например, 90">
-      <div class="chips" id="chips-days">
-        <button type="button" class="chip" data-d="14">2 недели</button>
-        <button type="button" class="chip" data-d="30">1 месяц</button>
-        <button type="button" class="chip" data-d="90">3 месяца</button>
-        <button type="button" class="chip" data-d="180">6 месяцев</button>
-        <button type="button" class="chip" data-d="365">год</button>
+      <div class="field" id="fld-result">
+        <label for="f-result">Как пойму, что цель достигнута</label>
+        <textarea id="f-result" maxlength="400" placeholder="Сдал экзамен в ГИБДД, права на руках"></textarea>
+        <p class="hint" id="h-result"></p>
+        <p class="err" id="e-result" aria-live="polite"></p>
       </div>
-      <p class="hint">При переносе в цели срок посчитается от дня переноса.</p>
-    </div>
 
-    <div class="field">
-      <span class="lbl" id="steps-lbl">Шаги</span>
-      <ul class="draft" id="draft" aria-labelledby="steps-lbl"></ul>
-      <button type="button" class="btn small" id="add-draft">Добавить шаг</button>
-      <p class="hint">Каждый шаг — действие на один заход. Первый лучше сделать сегодня.</p>
-    </div>
-
-    <div class="field">
-      <span class="lbl">Картинка</span>
-      <div class="imgpick">
-        <div class="imgprev" id="img-prev">Нет картинки</div>
-        <div class="imgbtns">
-          <button type="button" class="btn small" id="img-pick">Выбрать</button>
-          <button type="button" class="btn small" id="img-clear" hidden>Убрать</button>
+      <div class="field" id="fld-deadline">
+        <label for="f-deadline">Срок</label>
+        <input type="date" id="f-deadline">
+        <div class="chips" id="chips">
+          <button type="button" class="chip" data-days="14">2 недели</button>
+          <button type="button" class="chip" data-months="1">1 месяц</button>
+          <button type="button" class="chip" data-months="3">3 месяца</button>
+          <button type="button" class="chip" data-months="6">6 месяцев</button>
         </div>
+        <p class="err" id="e-deadline" aria-live="polite"></p>
       </div>
-      <input type="file" id="img-file" accept="image/*" hidden>
-      <p class="hint">По ней цель будет узнаваться в списке.</p>
-      <p class="err" id="e-img" aria-live="polite"></p>
-    </div>
+
+      <div class="field" id="fld-days" hidden>
+        <label for="f-days">Сколько времени понадобится, дней</label>
+        <input type="number" id="f-days" inputmode="numeric" min="1" max="3650" placeholder="Например, 90">
+        <div class="chips" id="chips-days">
+          <button type="button" class="chip" data-d="14">2 недели</button>
+          <button type="button" class="chip" data-d="30">1 месяц</button>
+          <button type="button" class="chip" data-d="90">3 месяца</button>
+          <button type="button" class="chip" data-d="180">6 месяцев</button>
+          <button type="button" class="chip" data-d="365">год</button>
+        </div>
+        <p class="hint">При переносе в цели срок посчитается от дня переноса.</p>
+      </div>
+
+      <div class="field" id="fld-steps">
+        <span class="lbl" id="steps-lbl">Шаги</span>
+        <ul class="draft" id="draft" aria-labelledby="steps-lbl"></ul>
+        <button type="button" class="btn small" id="add-draft">Добавить шаг</button>
+        <p class="hint" id="h-steps"></p>
+        <p class="err" id="e-steps" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <span class="lbl">Картинка</span>
+        <div class="imgpick">
+          <div class="imgprev" id="img-prev">Нет картинки</div>
+          <div class="imgbtns">
+            <button type="button" class="btn small" id="img-pick">Выбрать</button>
+            <button type="button" class="btn small" id="img-clear" hidden>Убрать</button>
+          </div>
+        </div>
+        <input type="file" id="img-file" accept="image/*" hidden>
+        <p class="hint" id="h-img"></p>
+        <p class="err" id="e-img" aria-live="polite"></p>
+      </div>
     </div>
 
     <div class="foot">
@@ -300,6 +333,20 @@ form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
       <button type="submit" class="btn primary" id="submit">Сохранить цель</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="cdlg" class="small" aria-labelledby="c-text">
+  <p id="c-text"></p>
+  <div class="btns">
+    <button type="button" class="btn" id="c-cancel">Отмена</button>
+    <button type="button" class="btn danger" id="c-ok">Удалить</button>
+  </div>
+</dialog>
+
+<dialog id="pdlg" class="small" aria-labelledby="p-title">
+  <p id="p-title"><b>Переместить заметку</b></p>
+  <ul class="picklist" id="p-list"></ul>
+  <div class="btns"><button type="button" class="btn" id="p-cancel">Отмена</button></div>
 </dialog>
 
 <script>
@@ -325,6 +372,8 @@ const fmtLong = s => parse(s).toLocaleDateString('ru-RU', { day: 'numeric', mont
 const normSteps = a => (Array.isArray(a) ? a : []).map(s => ({ id: String(s.id || uid()), text: String(s.text || ''), done: !!s.done }));
 const validGoal = g => g && typeof g === 'object' && g.id != null && typeof g.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(g.deadline || '');
 const validLater = g => g && typeof g === 'object' && g.id != null && typeof g.title === 'string';
+const validNote = n => n && typeof n === 'object' && n.id != null && typeof n.text === 'string';
+const validFolder = f => f && typeof f === 'object' && f.id != null && typeof f.name === 'string';
 const normGoal = g => ({
   id: String(g.id), title: String(g.title), result: String(g.result || ''), deadline: g.deadline,
   steps: normSteps(g.steps), img: g.img ? String(g.img) : null, created: +g.created || Date.now(), doneAt: g.doneAt ? +g.doneAt : null
@@ -333,11 +382,19 @@ const normLater = g => ({
   id: String(g.id), title: String(g.title), result: String(g.result || ''), steps: normSteps(g.steps),
   img: g.img ? String(g.img) : null, days: (+g.days > 0) ? Math.round(+g.days) : null, created: +g.created || Date.now()
 });
+const normNote = n => ({
+  id: String(n.id), text: String(n.text), pinned: !!n.pinned, folder: n.folder ? String(n.folder) : null,
+  created: +n.created || Date.now(), updated: +n.updated || +n.created || Date.now()
+});
+const normFolder = f => ({ id: String(f.id), name: String(f.name), img: f.img ? String(f.img) : null, created: +f.created || Date.now() });
 
-const validNote = n => n && typeof n === 'object' && n.id != null && typeof n.text === 'string';
-const normNote = n => ({ id: String(n.id), text: String(n.text), pinned: !!n.pinned, created: +n.created || Date.now(), updated: +n.updated || +n.created || Date.now() });
+/* цель закрывается сама, когда выполнены все шаги */
+const autoComplete = g => {
+  if (!g.doneAt && g.steps.length && g.steps.every(s => s.done)) { g.doneAt = Date.now(); return true; }
+  return false;
+};
 
-/* ---------- IndexedDB: goals + images ---------- */
+/* ---------- IndexedDB: данные + картинки ---------- */
 let db = null;
 const idb = {
   open() {
@@ -373,14 +430,18 @@ const imgAll = () => new Promise((res, rej) => {
 let goals = [];
 let later = [];
 let notes = [];
-let noteDraft = '';
-let saveTimer = null;
+let folders = [];
 const imgs = new Map();            // id -> { blob, url }
 let tab = 'active';
 let openId = null;
+let noteFolder = null;             // открытая папка заметок
+let editNote = null;               // заметка в режиме правки
+let focusEdit = false;
+let noteDraft = '';
 let focusNew = false;
 let lastDeleted = null;
 let toastTimer = null;
+let saveTimer = null;
 
 function addImg(id, blob) {
   const old = imgs.get(id); if (old) URL.revokeObjectURL(old.url);
@@ -392,8 +453,10 @@ function dropImg(id) {
 }
 function save() {
   if (!db) return Promise.resolve();
-  return idb.run('kv', 'readwrite', t => { const s = t.objectStore('kv'); s.put(goals, 'goals'); s.put(later, 'later'); s.put(notes, 'notes'); })
-    .catch(() => toast('Не удалось сохранить: хранилище браузера недоступно'));
+  return idb.run('kv', 'readwrite', t => {
+    const s = t.objectStore('kv');
+    s.put(goals, 'goals'); s.put(later, 'later'); s.put(notes, 'notes'); s.put(folders, 'folders');
+  }).catch(() => toast('Не удалось сохранить: хранилище браузера недоступно'));
 }
 
 async function init() {
@@ -411,11 +474,14 @@ async function init() {
       goals = (Array.isArray(g) ? g : []).filter(validGoal).map(normGoal);
     }
     later = (Array.isArray(l) ? l : []).filter(validLater).map(normLater);
-    const nn = await kvGet('notes');
+    const nn = await kvGet('notes'), ff = await kvGet('folders');
     notes = (Array.isArray(nn) ? nn : []).filter(validNote).map(normNote);
+    folders = (Array.isArray(ff) ? ff : []).filter(validFolder).map(normFolder);
+
+    if (goals.map(autoComplete).some(Boolean)) save();
 
     const all = await imgAll();
-    const used = new Set([...goals, ...later].map(x => x.img).filter(Boolean));
+    const used = new Set([...goals, ...later, ...folders].map(x => x.img).filter(Boolean));
     all.forEach((blob, id) => { if (used.has(id)) addImg(id, blob); else imgDel(id).catch(() => {}); });
   } catch (e) {
     db = null; toast('Хранилище браузера недоступно: данные не сохранятся');
@@ -427,6 +493,8 @@ async function init() {
 const prog = g => { const t = g.steps.length, d = g.steps.filter(s => s.done).length; return { t, d, pct: t ? Math.round(d / t * 100) : 0 }; };
 const thumbHTML = g => { const im = g.img && imgs.get(g.img); return im ? `<img class="thumb" src="${im.url}" alt="">` : ''; };
 const coverHTML = g => { const im = g.img && imgs.get(g.img); return im ? `<img class="cover" src="${im.url}" alt="">` : ''; };
+const FOLDER_SVG = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+const noteCount = n => `${n} ${plural(n, ['заметка', 'заметки', 'заметок'])}`;
 
 const BUCKETS = [
   ['late',  'Просрочено',        d => d < 0],
@@ -449,20 +517,19 @@ function rowHTML(g, cls) {
   let detail = '';
   if (open) {
     const steps = g.steps.map(s =>
-      `<li class="${s.done ? 'off' : ''}"><input type="checkbox" id="s-${esc(s.id)}" data-step="${esc(s.id)}" ${s.done ? 'checked' : ''}><label for="s-${esc(s.id)}">${esc(s.text)}</label></li>`).join('');
+      `<li class="${s.done ? 'off' : ''}"><input type="checkbox" id="s-${esc(s.id)}" data-step="${esc(s.id)}" ${s.done ? 'checked' : ''} ${done ? 'disabled' : ''}><label for="s-${esc(s.id)}">${esc(s.text)}</label></li>`).join('');
     detail = `<div class="detail">
       ${coverHTML(g)}
       ${g.result ? `<p class="kv"><span>Результат</span>${esc(g.result)}</p>` : ''}
       <p class="kv"><span>Срок</span>${esc(fmtLong(g.deadline))}</p>
       ${g.steps.length ? `<ul class="steps">${steps}</ul>` : ''}
       ${done ? '' : `<div class="addstep"><input type="text" data-newstep maxlength="140" placeholder="Новый шаг" aria-label="Новый шаг"><button type="button" class="btn small" data-act="addstep">Добавить</button></div>`}
+      ${!done && !g.steps.length ? '<p class="hint">Добавь шаг: цель закроется сама, когда все шаги будут выполнены.</p>' : ''}
       <div class="actions">
         ${done
           ? `<button type="button" class="btn" data-act="reopen">Вернуть в работу</button>`
-          : `<button type="button" class="btn primary" data-act="finish">Цель достигнута</button>
-             <button type="button" class="btn" data-act="edit">Изменить</button>
-             <button type="button" class="btn" data-act="cal">В календарь</button>
-             <button type="button" class="btn" data-act="defer">В хранилище</button>`}
+          : `<button type="button" class="btn" data-act="edit">Изменить</button>
+             <button type="button" class="btn" data-act="cal">В календарь</button>`}
         <button type="button" class="btn danger" data-act="delete">Удалить</button>
       </div>
     </div>`;
@@ -499,35 +566,84 @@ function laterRowHTML(g) {
       </div>
     </div>`;
   }
-  return `<li class="row is-later" data-id="${esc(g.id)}">
-    <button type="button" class="row-head" data-act="toggle" aria-expanded="${open}">
-      <span class="days"><b>${num}</b><small>${lab}</small></span>
-      <span class="main">
-        <span class="title">${esc(g.title)}</span>
-        ${g.result ? `<span class="result">${esc(g.result)}</span>` : ''}
-        <span class="meta"><span>${n ? n + ' ' + plural(n, ['шаг', 'шага', 'шагов']) : 'без шагов'}</span></span>
-      </span>
-      ${thumbHTML(g)}
-    </button>${detail}
+  return `<li class="row is-later swipe" data-id="${esc(g.id)}">
+    <div class="swipe-bg r" aria-hidden="true">Перенести в цели</div>
+    <div class="swipe-bg l" aria-hidden="true">Удалить</div>
+    <div class="swipe-fg">
+      <button type="button" class="row-head" data-act="toggle" aria-expanded="${open}">
+        <span class="days"><b>${num}</b><small>${lab}</small></span>
+        <span class="main">
+          <span class="title">${esc(g.title)}</span>
+          ${g.result ? `<span class="result">${esc(g.result)}</span>` : ''}
+          <span class="meta"><span>${n ? n + ' ' + plural(n, ['шаг', 'шага', 'шагов']) : 'без шагов'}</span></span>
+        </span>
+        ${thumbHTML(g)}
+      </button>${detail}
+    </div>
   </li>`;
 }
 
+/* --- заметки --- */
 function noteRowHTML(n) {
-  const open = openId === n.id;
+  const open = openId === n.id, editing = open && editNote === n.id;
   const date = esc(fmtShort(iso(new Date(n.created))));
+  let detail = '';
+  if (open) {
+    detail = `<div class="detail wide">
+      ${editing
+        ? `<textarea data-noteedit maxlength="2000" aria-label="Текст заметки">${esc(n.text)}</textarea>
+           <div class="actions"><button type="button" class="btn primary" data-act="donenote">Готово</button></div>`
+        : `<p class="note-full">${n.text.trim() ? esc(n.text) : 'Пустая заметка'}</p>
+           <div class="actions">
+             <button type="button" class="btn" data-act="editnote">Изменить</button>
+             <button type="button" class="btn" data-act="pin">${n.pinned ? 'Открепить' : 'Закрепить'}</button>
+             ${folders.length ? '<button type="button" class="btn" data-act="tofolder">В папку</button>' : ''}
+             <button type="button" class="btn danger" data-act="delete">Удалить</button>
+           </div>`}
+    </div>`;
+  }
   return `<li class="row" data-id="${esc(n.id)}">
     <button type="button" class="note-head" data-act="toggle" aria-expanded="${open}">
       ${open ? '' : `<span class="note-text">${n.text.trim() ? esc(n.text) : 'Пустая заметка'}</span>`}
       <span class="meta"><span>${date}</span>${n.pinned ? '<span class="pin">закреплена</span>' : ''}</span>
-    </button>
-    ${open ? `<div class="detail wide">
-      <textarea data-noteedit maxlength="2000" aria-label="Текст заметки">${esc(n.text)}</textarea>
-      <div class="actions">
-        <button type="button" class="btn" data-act="pin">${n.pinned ? 'Открепить' : 'Закрепить'}</button>
-        <button type="button" class="btn danger" data-act="delete">Удалить</button>
-      </div>
-    </div>` : ''}
+    </button>${detail}
   </li>`;
+}
+const sortNotes = arr => [...arr].sort((a, b) => (b.pinned - a.pinned) || (b.updated - a.updated));
+const composeHTML = () =>
+  `<div class="compose">
+    <textarea id="note-new" maxlength="2000" placeholder="${noteFolder ? 'Что записать в папку?' : 'Что записать?'}" aria-label="Новая заметка">${esc(noteDraft)}</textarea>
+    <button type="button" class="btn primary" data-act="addnote" ${noteDraft.trim() ? '' : 'disabled'}>Добавить</button>
+  </div>`;
+function folderTileHTML(f) {
+  const im = f.img && imgs.get(f.img);
+  const n = notes.filter(x => x.folder === f.id).length;
+  return `<button type="button" class="folder" data-act="openfolder" data-fid="${esc(f.id)}">
+    <span class="fcover">${im ? `<img src="${im.url}" alt="">` : FOLDER_SVG}</span>
+    <span class="fname">${esc(f.name)}</span>
+    <span class="fcount">${noteCount(n)}</span>
+  </button>`;
+}
+function notesHTML() {
+  const f = noteFolder && folders.find(x => x.id === noteFolder);
+  if (f) {
+    const list = sortNotes(notes.filter(n => n.folder === f.id));
+    const im = f.img && imgs.get(f.img);
+    return `<div style="margin-top:12px"><button type="button" class="btn small" data-act="back">‹ Заметки</button></div>
+      <div class="ftitle"><span class="fth">${im ? `<img src="${im.url}" alt="">` : FOLDER_SVG}</span>
+        <div><h2>${esc(f.name)}</h2><p>${noteCount(list.length)}</p></div></div>
+      <div class="actions" style="margin-top:10px">
+        <button type="button" class="btn small" data-act="editfolder">Изменить папку</button>
+        <button type="button" class="btn small danger" data-act="delfolder">Удалить папку</button>
+      </div>` +
+      composeHTML() +
+      (list.length ? `<ul class="list">${list.map(noteRowHTML).join('')}</ul>` : '<p class="note">В папке пока пусто.</p>');
+  }
+  const root = sortNotes(notes.filter(n => !n.folder || !folders.some(x => x.id === n.folder)));
+  return composeHTML() +
+    (folders.length ? `<div class="folders">${folders.slice().sort((a, b) => a.created - b.created).map(folderTileHTML).join('')}</div>` : '') +
+    (root.length ? (folders.length ? '<h2 class="sub">Без папки</h2>' : '') + `<ul class="list">${root.map(noteRowHTML).join('')}</ul>`
+                 : (folders.length ? '' : '<p class="note">Заметок пока нет. Папку можно создать кнопкой сверху.</p>'));
 }
 
 const emptyHTML = (title, text, btn) =>
@@ -540,16 +656,15 @@ function render() {
   $('#c-done').textContent = dn.length;
   $('#c-later').textContent = later.length;
   $('#c-notes').textContent = notes.length;
-  $('#add').hidden = tab === 'notes';
-  $('#add').textContent = tab === 'later' ? 'В хранилище' : 'Новая цель';
+  $('#add').textContent = tab === 'later' ? 'В хранилище' : tab === 'notes' ? 'Новая папка' : 'Новая цель';
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
 
   const el = $('#list');
   if (tab === 'active') {
     if (!act.length) {
       el.innerHTML = goals.length
-        ? emptyHTML('Активных целей нет', 'Добавь следующую: что именно, как проверить результат и к какому сроку.', 'Добавить цель')
-        : emptyHTML('Пока нет целей', 'Хорошая цель отвечает на три вопроса: что именно, как проверить результат и к какому сроку.', 'Добавить цель');
+        ? emptyHTML('Активных целей нет', 'Добавь следующую: что именно, как проверить результат, к какому сроку и какими шагами.', 'Добавить цель')
+        : emptyHTML('Пока нет целей', 'Хорошая цель отвечает на четыре вопроса: что именно, как проверить результат, к какому сроку и какими шагами.', 'Добавить цель');
     } else {
       act.sort((a, b) => a.deadline.localeCompare(b.deadline) || a.created - b.created);
       const groups = BUCKETS.map(([cls, name]) => ({ cls, name, items: [] }));
@@ -558,29 +673,29 @@ function render() {
         `<section class="group ${x.cls}"><h2>${x.name}</h2><ul class="list">${x.items.map(g => rowHTML(g, x.cls)).join('')}</ul></section>`).join('');
     }
   } else if (tab === 'done') {
-    if (!dn.length) el.innerHTML = emptyHTML('Выполненных целей пока нет', 'Здесь появятся цели, которые ты отметишь как достигнутые.', '');
+    if (!dn.length) el.innerHTML = emptyHTML('Выполненных целей пока нет', 'Цель попадёт сюда сама, когда ты отметишь все её шаги.', '');
     else {
       dn.sort((a, b) => b.doneAt - a.doneAt);
       el.innerHTML = `<section class="group"><h2>Выполнено</h2><ul class="list">${dn.map(g => rowHTML(g, '')).join('')}</ul></section>`;
     }
   } else if (tab === 'notes') {
-    const sorted = [...notes].sort((a, b) => (b.pinned - a.pinned) || (b.updated - a.updated));
-    el.innerHTML = `<div class="compose">
-        <textarea id="note-new" maxlength="2000" placeholder="Что записать?" aria-label="Новая заметка">${esc(noteDraft)}</textarea>
-        <button type="button" class="btn primary" data-act="addnote" ${noteDraft.trim() ? '' : 'disabled'}>Добавить</button>
-      </div>` +
-      (sorted.length ? `<ul class="list">${sorted.map(noteRowHTML).join('')}</ul>` : '<p class="note">Заметок пока нет.</p>');
+    if (noteFolder && !folders.some(f => f.id === noteFolder)) noteFolder = null;
+    el.innerHTML = notesHTML();
   } else {
     if (!later.length) {
       el.innerHTML = emptyHTML('Хранилище пусто', 'Записывай сюда цели на будущее: с шагами и картинкой. В основной список переноси по одной, когда будет место.', 'Добавить в хранилище');
     } else {
       later.sort((a, b) => a.created - b.created);
-      el.innerHTML = `<p class="note">Цифра слева — сколько времени понадобится. При переносе срок отсчитается от дня переноса. Сейчас в работе: ${act.length}.</p>
+      el.innerHTML = `<p class="note">Цифра слева — сколько времени понадобится. Свайп вправо переносит цель в основной список, свайп влево удаляет. Сейчас в работе: ${act.length}.</p>
         <ul class="list">${later.map(laterRowHTML).join('')}</ul>`;
     }
   }
 
   el.querySelectorAll('[data-noteedit]').forEach(autosize);
+  if (focusEdit) {
+    focusEdit = false; const t = el.querySelector('[data-noteedit]');
+    if (t) { t.focus(); try { t.setSelectionRange(t.value.length, t.value.length); } catch (e) {} }
+  }
   if (focusNew) { focusNew = false; const i = el.querySelector('[data-newstep]'); if (i) i.focus(); }
 }
 
@@ -599,7 +714,7 @@ $('#toast').addEventListener('click', e => {
   lastDeleted = null; save(); render(); $('#toast').hidden = true;
 });
 
-/* ---------- calendar (.ics) ---------- */
+/* ---------- календарь (.ics) ---------- */
 const icsEsc = s => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 function fold(line) {
   const enc = new TextEncoder();
@@ -632,9 +747,9 @@ function buildIcs(g) {
     `SUMMARY:${icsEsc('Срок цели: ' + g.title)}`,
     desc ? `DESCRIPTION:${icsEsc(desc)}` : null,
     'TRANSP:TRANSPARENT',
-    ...alarm('-P6DT15H', 'Через неделю срок: ' + g.title),   // за 7 дней, в 9:00
-    ...alarm('-PT15H', 'Завтра срок: ' + g.title),           // накануне, в 9:00
-    ...alarm('PT9H', 'Сегодня срок: ' + g.title),            // в день срока, в 9:00
+    ...alarm('-P6DT15H', 'Через неделю срок: ' + g.title),
+    ...alarm('-PT15H', 'Завтра срок: ' + g.title),
+    ...alarm('PT9H', 'Сегодня срок: ' + g.title),
     'END:VEVENT', 'END:VCALENDAR'
   ].filter(Boolean).map(fold).join('\r\n') + '\r\n';
 }
@@ -657,45 +772,140 @@ async function sendIcs(g) {
   toast('Файл скачан. Открой его, чтобы добавить событие в календарь');
 }
 
-/* ---------- list interactions ---------- */
+/* ---------- блокировка прокрутки и диалоги ---------- */
+const dlg = $('#dlg'), form = $('#form'), cdlg = $('#cdlg'), pdlg = $('#pdlg');
+let lockY = 0, locked = false;
+function lockScroll() {
+  if (locked) return; locked = true;
+  lockY = window.scrollY; document.body.style.top = `-${lockY}px`;
+  document.documentElement.classList.add('modal-open');
+}
+function unlockScroll() {
+  if (!locked) return; locked = false;
+  document.documentElement.classList.remove('modal-open'); document.body.style.top = '';
+  window.scrollTo(0, lockY);
+}
+const syncLock = () => { if (!document.querySelector('dialog[open]')) unlockScroll(); };
+[dlg, cdlg, pdlg].forEach(d => d.addEventListener('close', syncLock));
+
+/* форма привязана к видимой области только пока открыта клавиатура */
+function fitDialog() {
+  const v = window.visualViewport; if (!v || !dlg.open) return;
+  if (window.innerHeight - v.height > 120) {
+    dlg.style.setProperty('--vh', v.height + 'px'); dlg.style.setProperty('--vt', v.offsetTop + 'px');
+  } else { dlg.style.removeProperty('--vh'); dlg.style.removeProperty('--vt'); }
+}
+if (window.visualViewport) {
+  visualViewport.addEventListener('resize', () => {
+    fitDialog();
+    const a = document.activeElement;
+    if (dlg.open && a && dlg.contains(a) && a.matches('input,textarea')) { try { a.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+  });
+  visualViewport.addEventListener('scroll', fitDialog);
+}
+dlg.addEventListener('touchmove', e => { if (!e.target.closest('.fbody')) e.preventDefault(); }, { passive: false });
+
+let confirmCb = null;
+function confirmBox(text, okLabel, cb) {
+  $('#c-text').textContent = text; $('#c-ok').textContent = okLabel; confirmCb = cb;
+  lockScroll(); cdlg.showModal();
+}
+$('#c-ok').addEventListener('click', () => { const cb = confirmCb; confirmCb = null; cdlg.close(); if (cb) cb(); });
+$('#c-cancel').addEventListener('click', () => { confirmCb = null; cdlg.close(); });
+cdlg.addEventListener('click', e => { if (e.target === cdlg) { confirmCb = null; cdlg.close(); } });
+
+let pickTarget = null;
+function pickFolder(n) {
+  const items = [{ id: null, name: 'Без папки' }, ...folders];
+  $('#p-list').innerHTML = items.map(f =>
+    `<li><button type="button" class="btn pick" data-pick="${f.id === null ? '' : esc(f.id)}">${esc(f.name)}${(n.folder || null) === f.id ? ' ✓' : ''}</button></li>`).join('');
+  pickTarget = n.id; lockScroll(); pdlg.showModal();
+}
+$('#p-list').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]'); if (!b) return;
+  const n = notes.find(x => x.id === pickTarget);
+  if (n) {
+    n.folder = b.dataset.pick || null; openId = null; editNote = null; save(); render();
+    const f = folders.find(x => x.id === n.folder);
+    toast(f ? `Заметка перенесена в «${f.name}»` : 'Заметка вынесена из папки');
+  }
+  pdlg.close();
+});
+$('#p-cancel').addEventListener('click', () => pdlg.close());
+pdlg.addEventListener('click', e => { if (e.target === pdlg) pdlg.close(); });
+
+/* ---------- список: действия ---------- */
 const listNow = () => tab === 'later' ? later : tab === 'notes' ? notes : goals;
 const goalOf = el => { const r = el.closest('.row'); return r ? listNow().find(g => g.id === r.dataset.id) : null; };
 
-function addStepInline(row) {
+function addStepInline(row, keepFocus) {
   const g = goalOf(row), input = row.querySelector('[data-newstep]');
   if (!g || !input) return;
   const text = input.value.trim(); if (!text) return;
   g.steps.push({ id: uid(), text, done: false });
-  save(); focusNew = true; render();
+  save(); focusNew = !!keepFocus; render();
 }
+
+function askDeleteLater(id) {
+  const g = later.find(x => x.id === id); if (!g) return;
+  confirmBox(`Удалить цель «${g.title}» из хранилища? Это действие нельзя отменить.`, 'Удалить', () => {
+    later = later.filter(x => x !== g); openId = null; save(); render(); toast('Цель удалена');
+  });
+}
+function askDeleteFolder() {
+  const f = folders.find(x => x.id === noteFolder); if (!f) return;
+  confirmBox(`Удалить папку «${f.name}»? Заметки внутри останутся, но уже без папки.`, 'Удалить папку', () => {
+    notes.forEach(n => { if (n.folder === f.id) n.folder = null; });
+    folders = folders.filter(x => x !== f); if (f.img) dropImg(f.img);
+    noteFolder = null; openId = null; save(); render(); toast('Папка удалена');
+  });
+}
+
+function addNote() {
+  const text = noteDraft.trim(); if (!text) return;
+  const now = Date.now();
+  notes.push({ id: uid(), text, pinned: false, folder: noteFolder || null, created: now, updated: now });
+  noteDraft = ''; save(); render();
+}
+function autosize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); }
+
+/* после свайпа браузер шлёт click: гасим его */
+let swipedAt = 0;
+document.addEventListener('click', e => { if (Date.now() - swipedAt < 450) { e.stopPropagation(); e.preventDefault(); } }, true);
 
 document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act]'); if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'new') return openForm(tab === 'later' ? 'later' : 'goal');
   if (act === 'addnote') return addNote();
+  if (act === 'openfolder') { noteFolder = btn.dataset.fid; openId = null; editNote = null; render(); return; }
+  if (act === 'back') { noteFolder = null; openId = null; editNote = null; render(); return; }
+  if (act === 'editfolder') return openForm('folder', noteFolder);
+  if (act === 'delfolder') return askDeleteFolder();
   const g = goalOf(btn); if (!g) return;
 
-  if (act === 'toggle') { openId = openId === g.id ? null : g.id; render(); }
+  if (act === 'toggle') { openId = openId === g.id ? null : g.id; editNote = null; render(); }
   else if (act === 'edit') openForm(tab === 'later' ? 'later' : 'goal', g.id);
   else if (act === 'move') openForm('move', g.id);
   else if (act === 'cal') sendIcs(g);
-  else if (act === 'addstep') addStepInline(btn.closest('.row'));
-  else if (act === 'finish') { g.doneAt = Date.now(); openId = null; save(); render(); toast('Цель отмечена выполненной'); }
-  else if (act === 'reopen') { g.doneAt = null; openId = null; save(); render(); toast('Цель вернулась в активные'); }
-  else if (act === 'pin') { g.pinned = !g.pinned; save(); render(); }
-  else if (act === 'defer') {
-    const dl = daysLeft(g.deadline);
-    later.push({ id: g.id, title: g.title, result: g.result, steps: g.steps.map(s => ({ ...s })), img: g.img, days: dl > 0 ? dl : null, created: Date.now() });
-    goals = goals.filter(x => x !== g); openId = null; save(); render(); toast('Цель ушла в хранилище');
+  else if (act === 'addstep') addStepInline(btn.closest('.row'), false);
+  else if (act === 'reopen') {
+    g.doneAt = null;
+    const last = [...g.steps].reverse().find(s => s.done); if (last) last.done = false;
+    openId = null; save(); render(); toast('Цель вернулась в активные, последний шаг снова открыт');
   }
+  else if (act === 'editnote') { editNote = g.id; focusEdit = true; render(); }
+  else if (act === 'donenote') { editNote = null; render(); }
+  else if (act === 'pin') { g.pinned = !g.pinned; save(); render(); }
+  else if (act === 'tofolder') pickFolder(g);
   else if (act === 'delete') {
     const key = tab === 'later' ? 'later' : tab === 'notes' ? 'notes' : 'goals';
     lastDeleted = { item: g, index: listNow().indexOf(g), list: key };
     if (key === 'later') later = later.filter(x => x !== g);
     else if (key === 'notes') notes = notes.filter(x => x !== g);
     else goals = goals.filter(x => x !== g);
-    openId = null; save(); render(); toast(key === 'notes' ? 'Заметка удалена' : 'Цель удалена', true);
+    openId = null; editNote = null; save(); render(); toast(key === 'notes' ? 'Заметка удалена' : 'Цель удалена', true);
   }
 });
 
@@ -703,22 +913,16 @@ document.addEventListener('change', e => {
   if (!e.target.matches('[data-step]')) return;
   const g = goalOf(e.target); if (!g) return;
   const s = g.steps.find(x => x.id === e.target.dataset.step); if (!s) return;
-  s.done = e.target.checked; save(); render();
+  s.done = e.target.checked;
+  const finished = autoComplete(g);
+  if (finished) openId = null;
+  save(); render();
+  if (finished) toast('Цель выполнена и перенесена в «Готово»');
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.target.matches('[data-newstep]')) { e.preventDefault(); addStepInline(e.target.closest('.row')); }
+  if (e.key === 'Enter' && e.target.matches('[data-newstep]')) { e.preventDefault(); addStepInline(e.target.closest('.row'), true); }
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'note-new') { e.preventDefault(); addNote(); }
 });
-
-/* ---------- notes ---------- */
-function addNote() {
-  const text = noteDraft.trim(); if (!text) return;
-  const now = Date.now();
-  notes.push({ id: uid(), text, pinned: false, created: now, updated: now });
-  noteDraft = ''; save(); render();
-}
-function autosize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); }
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'note-new') {
@@ -729,18 +933,62 @@ document.addEventListener('input', e => {
     n.text = t.value; n.updated = Date.now(); autosize(t); scheduleSave();
   }
 });
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; openId = null; render(); }));
-$('#add').addEventListener('click', () => openForm(tab === 'later' ? 'later' : 'goal'));
 
-/* ---------- form ---------- */
-const dlg = $('#dlg'), form = $('#form');
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.tab === 'notes' && tab === 'notes') noteFolder = null;   // повторный тап по вкладке — в корень заметок
+  tab = b.dataset.tab; openId = null; editNote = null; render();
+}));
+$('#add').addEventListener('click', () => openForm(tab === 'later' ? 'later' : tab === 'notes' ? 'folder' : 'goal'));
+
+/* ---------- свайпы в хранилище ---------- */
+let sw = null;
+document.addEventListener('pointerdown', e => {
+  if (tab !== 'later' || dlg.open || cdlg.open) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  const fg = e.target.closest('.swipe-fg'); if (!fg) return;
+  sw = { fg, row: fg.closest('.row'), x: e.clientX, y: e.clientY, dx: 0, drag: false, pid: e.pointerId };
+});
+document.addEventListener('pointermove', e => {
+  if (!sw || e.pointerId !== sw.pid) return;
+  const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+  if (!sw.drag) {
+    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      sw.drag = true; sw.fg.classList.remove('snap');
+      try { sw.fg.setPointerCapture(e.pointerId); } catch (err) {}
+    } else return;
+  }
+  const w = sw.fg.offsetWidth || 360, lim = w * 0.6;
+  sw.dx = Math.max(-lim, Math.min(lim, dx));
+  sw.fg.style.transform = `translateX(${sw.dx}px)`;
+  const r = sw.row.querySelector('.swipe-bg.r'), l = sw.row.querySelector('.swipe-bg.l');
+  r.style.opacity = sw.dx > 0 ? Math.min(1, sw.dx / 60) : 0;
+  l.style.opacity = sw.dx < 0 ? Math.min(1, -sw.dx / 60) : 0;
+});
+function endSwipe(cancel) {
+  if (!sw) return;
+  const s = sw; sw = null;
+  if (!s.drag) return;
+  swipedAt = Date.now();
+  const w = s.fg.offsetWidth || 360, thr = Math.min(110, w * 0.3);
+  s.fg.classList.add('snap'); s.fg.style.transform = '';
+  setTimeout(() => s.row.querySelectorAll('.swipe-bg').forEach(b => { b.style.opacity = 0; }), 220);
+  if (cancel) return;
+  const id = s.row.dataset.id;
+  if (s.dx > thr) openForm('move', id);
+  else if (s.dx < -thr) askDeleteLater(id);
+}
+document.addEventListener('pointerup', () => endSwipe(false));
+document.addEventListener('pointercancel', () => endSwipe(true));
+
+/* ---------- форма ---------- */
 let fMode = 'goal', editingId = null, draft = [];
 let draftImg = { id: null, blob: null }, origImg = null, prevUrl = null;
 
 const TXT = {
-  goal:  { create: 'Новая цель',        edit: 'Изменить цель', submit: 'Сохранить цель' },
-  later: { create: 'В хранилище',       edit: 'Изменить',      submit: 'Сохранить' },
-  move:  { create: 'Перенести в цели',  edit: 'Перенести в цели', submit: 'Перенести в цели' }
+  goal:   { create: 'Новая цель',       edit: 'Изменить цель',   submit: 'Сохранить цель' },
+  later:  { create: 'В хранилище',      edit: 'Изменить',        submit: 'Сохранить' },
+  move:   { create: 'Перенести в цели', edit: 'Перенести в цели', submit: 'Перенести в цели' },
+  folder: { create: 'Новая папка',      edit: 'Изменить папку',  submit: 'Сохранить папку' }
 };
 const setErr = (id, msg) => { $('#e-' + id).textContent = msg || ''; };
 
@@ -760,35 +1008,46 @@ function renderImgPrev() {
 
 function openForm(mode, id) {
   fMode = mode; editingId = id || null;
-  const src = mode === 'goal' ? goals.find(x => x.id === id) : (id ? later.find(x => x.id === id) : null);
-  const t = TXT[mode];
-  $('#dlg-title').textContent = src ? t.edit : t.create;
+  const src = mode === 'goal' ? goals.find(x => x.id === id)
+            : mode === 'folder' ? folders.find(x => x.id === id)
+            : (id ? later.find(x => x.id === id) : null);
+  const t = TXT[mode], goalish = mode === 'goal' || mode === 'move', isFolder = mode === 'folder';
+  $('#dlg-title').textContent = src && mode !== 'move' ? t.edit : t.create;
   $('#submit').textContent = t.submit;
 
-  $('#f-title').value = src ? src.title : '';
-  $('#f-result').value = src ? src.result : '';
+  $('#l-title').textContent = isFolder ? 'Название' : 'Цель';
+  $('#f-title').placeholder = isFolder ? 'Например, Идеи' : 'Получить права категории B';
+  $('#f-title').value = src ? (isFolder ? src.name : src.title) : '';
+  $('#f-result').value = src && !isFolder ? src.result : '';
   $('#f-deadline').value = mode === 'goal' && src ? src.deadline : (mode === 'move' && src && src.days ? iso(addDays(today(), src.days)) : '');
   $('#f-days').value = mode === 'later' && src && src.days ? src.days : '';
-  $('#fld-deadline').hidden = mode === 'later';
+
+  $('#fld-result').hidden = isFolder;
+  $('#fld-deadline').hidden = !goalish;
   $('#fld-days').hidden = mode !== 'later';
+  $('#fld-steps').hidden = isFolder;
   $('#h-result').textContent = mode === 'later'
     ? 'Можно заполнить позже. При переносе в цели поле станет обязательным.'
     : 'Число, факт или дата, которые можно проверить. «Стать лучше» не подходит.';
+  $('#h-steps').textContent = 'Каждый шаг — действие на один заход. Цель закроется сама, когда выполнишь все шаги.';
+  $('#h-img').textContent = isFolder ? 'Превью папки в списке заметок.' : 'По ней цель будет узнаваться в списке.';
 
-  const note = $('#dlg-note'), title = $('#dlg-title');
+  const note = $('#dlg-note');
   if (mode === 'move') {
     const n = goals.filter(g => !g.doneAt).length;
     note.textContent = `Сейчас в работе: ${n}.` + (src && src.days ? ' Срок отсчитан от сегодняшнего дня, поправь при необходимости.' : ' Выбери срок.');
-    note.hidden = false; title.classList.add('tight');
-  } else { note.hidden = true; title.classList.remove('tight'); }
+    note.hidden = false;
+  } else note.hidden = true;
 
-  draft = src ? src.steps.map(s => ({ ...s })) : [];
+  draft = src && !isFolder ? src.steps.map(s => ({ ...s })) : [];
   draftImg = { id: src ? src.img : null, blob: null };
   origImg = src ? src.img : null;
   renderDraft(); renderImgPrev();
-  ['title', 'result', 'deadline', 'img'].forEach(k => setErr(k, ''));
+  ['title', 'result', 'deadline', 'steps', 'img'].forEach(k => setErr(k, ''));
+
   lockScroll(); dlg.showModal(); fitDialog();
-  $('#f-title').focus();
+  // клавиатура не открывается сама: поле получает фокус только по тапу
+  const a = document.activeElement; if (a && dlg.contains(a) && a.matches('input,textarea')) a.blur();
 }
 
 $('#chips').addEventListener('click', e => {
@@ -811,7 +1070,7 @@ $('#draft').addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.matches('[data-i]')) { e.preventDefault(); if (e.target.value.trim()) addDraft(); }
 });
 function addDraft() {
-  draft.push({ id: uid(), text: '', done: false }); renderDraft();
+  draft.push({ id: uid(), text: '', done: false }); renderDraft(); setErr('steps', '');
   const inputs = $('#draft').querySelectorAll('input'); inputs[inputs.length - 1].focus();
 }
 $('#add-draft').addEventListener('click', addDraft);
@@ -838,29 +1097,7 @@ $('#img-file').addEventListener('change', async e => {
 
 $('#cancel').addEventListener('click', () => dlg.close());
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
-dlg.addEventListener('close', () => { unlockScroll(); if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; } });
-
-/* экран не двигается за полями: фон заблокирован, диалог привязан к видимой области, крутится только тело формы */
-let lockY = 0, locked = false;
-function lockScroll() {
-  if (locked) return; locked = true;
-  lockY = window.scrollY; document.body.style.top = `-${lockY}px`;
-  document.documentElement.classList.add('modal-open');
-}
-function unlockScroll() {
-  if (!locked) return; locked = false;
-  document.documentElement.classList.remove('modal-open'); document.body.style.top = '';
-  window.scrollTo(0, lockY);
-}
-function fitDialog() {
-  const v = window.visualViewport; if (!v || !dlg.open) return;
-  dlg.style.setProperty('--vh', v.height + 'px'); dlg.style.setProperty('--vt', v.offsetTop + 'px');
-}
-if (window.visualViewport) { visualViewport.addEventListener('resize', fitDialog); visualViewport.addEventListener('scroll', fitDialog); }
-dlg.addEventListener('touchmove', e => { if (!e.target.closest('.fbody')) e.preventDefault(); }, { passive: false });
-dlg.addEventListener('focusin', e => {
-  if (e.target.matches('input,textarea')) setTimeout(() => { try { e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {} }, 300);
-});
+dlg.addEventListener('close', () => { if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; } });
 
 let busy = false;
 form.addEventListener('submit', async e => {
@@ -869,20 +1106,27 @@ form.addEventListener('submit', async e => {
   busy = true; $('#submit').disabled = true;
   try { await submitForm(); } finally { busy = false; $('#submit').disabled = false; }
 });
+
 async function submitForm() {
   const title = $('#f-title').value.trim(), result = $('#f-result').value.trim(), deadline = $('#f-deadline').value;
   const daysRaw = parseInt($('#f-days').value, 10);
+  const steps = draft.map(s => ({ ...s, text: s.text.trim() })).filter(s => s.text);
+  const goalish = fMode === 'goal' || fMode === 'move';
+
   const errs = {};
-  if (!title) errs.title = 'Напиши, что именно нужно получить.';
-  if (fMode !== 'later') {
+  if (!title) errs.title = fMode === 'folder' ? 'Введи название папки.' : 'Напиши, что именно нужно получить.';
+  if (goalish) {
     if (!result) errs.result = 'Опиши, как проверить результат: число, факт или дату.';
     if (!deadline) errs.deadline = 'Выбери срок.';
+    if (!steps.length) errs.steps = 'Добавь хотя бы один шаг: цель закроется, когда все шаги будут выполнены.';
   }
-  ['title', 'result', 'deadline'].forEach(k => setErr(k, errs[k]));
+  ['title', 'result', 'deadline', 'steps'].forEach(k => setErr(k, errs[k]));
   const first = Object.keys(errs)[0];
-  if (first) { $('#f-' + first).focus(); return; }
-
-  const steps = draft.map(s => ({ ...s, text: s.text.trim() })).filter(s => s.text);
+  if (first) {   // показываем ошибку без фокуса, чтобы не открывалась клавиатура
+    const target = first === 'steps' ? $('#fld-steps') : $('#f-' + first);
+    try { target.scrollIntoView({ block: 'center' }); } catch (e) {}
+    return;
+  }
 
   let img = draftImg.id;
   if (draftImg.blob) {
@@ -894,7 +1138,7 @@ async function submitForm() {
 
   let id = editingId, msg;
   if (fMode === 'goal') {
-    if (editingId) { const g = goals.find(x => x.id === editingId); if (g) Object.assign(g, { title, result, deadline, steps, img }); }
+    if (editingId) { const g = goals.find(x => x.id === editingId); if (g) { Object.assign(g, { title, result, deadline, steps, img }); autoComplete(g); } }
     else { id = uid(); goals.push({ id, title, result, deadline, steps, img, created: Date.now(), doneAt: null }); }
     tab = 'active'; msg = 'Цель сохранена';
   } else if (fMode === 'later') {
@@ -902,23 +1146,27 @@ async function submitForm() {
     if (editingId) { const g = later.find(x => x.id === editingId); if (g) Object.assign(g, { title, result, steps, img, days }); }
     else { id = uid(); later.push({ id, title, result, steps, img, days, created: Date.now() }); }
     tab = 'later'; msg = 'Сохранено в хранилище';
+  } else if (fMode === 'folder') {
+    if (editingId) { const f = folders.find(x => x.id === editingId); if (f) Object.assign(f, { name: title, img }); }
+    else { id = uid(); folders.push({ id, name: title, img, created: Date.now() }); }
+    tab = 'notes'; msg = 'Папка сохранена';
   } else {
     later = later.filter(x => x.id !== editingId);
     goals.push({ id, title, result, deadline, steps, img, created: Date.now(), doneAt: null });
     tab = 'active'; msg = 'Цель перенесена в основной список';
   }
-  openId = id;
+  if (fMode !== 'folder') openId = id;
   await save(); dlg.close(); render(); toast(msg);
 }
 
-/* ---------- export / import ---------- */
+/* ---------- экспорт / импорт ---------- */
 const toDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
 
 $('#export').addEventListener('click', async () => {
   try {
     const images = {};
-    for (const g of [...goals, ...later]) { const im = g.img && imgs.get(g.img); if (im) images[g.img] = await toDataURL(im.blob); }
-    downloadBlob(new Blob([JSON.stringify({ version: 3, goals, later, notes, images })], { type: 'application/json' }), `goals-${iso(new Date())}.json`);
+    for (const g of [...goals, ...later, ...folders]) { const im = g.img && imgs.get(g.img); if (im) images[g.img] = await toDataURL(im.blob); }
+    downloadBlob(new Blob([JSON.stringify({ version: 4, goals, later, notes, folders, images })], { type: 'application/json' }), `goals-${iso(new Date())}.json`);
   } catch (e) { toast('Не удалось сделать экспорт'); }
 });
 $('#import').addEventListener('click', () => $('#file').click());
@@ -930,6 +1178,7 @@ $('#file').addEventListener('change', async e => {
     const gs = (isArr ? data : (data.goals || [])).filter(validGoal).map(normGoal);
     const ls = (isArr ? [] : (data.later || [])).filter(validLater).map(normLater);
     const ns = (isArr ? [] : (data.notes || [])).filter(validNote).map(normNote);
+    const fs = (isArr ? [] : (data.folders || [])).filter(validFolder).map(normFolder);
     const images = (!isArr && data.images) || {};
     for (const id of Object.keys(images)) {
       const u = images[id];
@@ -938,8 +1187,9 @@ $('#file').addEventListener('change', async e => {
       await imgPut(id, blob); addImg(id, blob);
     }
     const merge = (arr, items) => items.forEach(g => { const i = arr.findIndex(x => x.id === g.id); if (i >= 0) arr[i] = g; else arr.push(g); });
-    merge(goals, gs); merge(later, ls); merge(notes, ns);
-    await save(); render(); toast(`Импортировано: ${gs.length + ls.length + ns.length}`);
+    merge(goals, gs); merge(later, ls); merge(notes, ns); merge(folders, fs);
+    goals.forEach(autoComplete);
+    await save(); render(); toast(`Импортировано: ${gs.length + ls.length + ns.length + fs.length}`);
   } catch (err) { toast('Файл не подходит: нужен JSON, выгруженный из этого приложения'); }
 });
 
