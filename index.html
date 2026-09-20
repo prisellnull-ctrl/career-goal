@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Цели</title>
 <meta name="theme-color" content="#F1F2F4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12151C" media="(prefers-color-scheme: dark)">
@@ -25,7 +25,11 @@
   }
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+*{touch-action:manipulation}
+body{-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 body{
   margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -49,8 +53,11 @@ h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:70
 .btn.danger{color:var(--late)}
 .btn.small{min-height:36px;padding:0 12px;font-size:14px}
 .btn.link{border:0;background:none;padding:0 4px;color:var(--ink2);min-height:36px;text-decoration:underline;text-underline-offset:3px}
+.btn[hidden]{display:none}
+.btn[disabled]{opacity:.45;cursor:default}
 
-.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs{display:flex;gap:16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
 .tab{
   background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;
   padding:10px 0;min-height:44px;color:var(--ink2);cursor:pointer;
@@ -96,6 +103,15 @@ h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:70
 }
 
 .detail{padding:0 14px 14px 82px}
+.detail.wide{padding-left:14px}
+.detail textarea{min-height:88px;max-height:50vh}
+.compose{display:flex;flex-direction:column;gap:8px;margin:16px 0 18px}
+.compose textarea{min-height:88px}
+.compose .btn{align-self:flex-end}
+.note-head{display:block;width:100%;padding:13px 14px;text-align:left;background:none;border:0;cursor:pointer}
+.note-head:focus-visible{outline-offset:-2px}
+.note-text{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
+.pin{color:var(--accent);font-weight:600}
 .cover{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin:0 0 12px;background:var(--track)}
 .kv{font-size:14px;margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
 .kv span{display:block;font-size:13px;color:var(--ink2)}
@@ -135,13 +151,16 @@ footer[hidden],#install[hidden]{display:none}
 
 dialog{
   border:0;padding:0;border-radius:14px;background:var(--surface);color:var(--ink);
-  width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;
-  box-shadow:0 24px 64px rgba(0,0,0,.3);
+  width:min(560px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.3);touch-action:pan-y;overscroll-behavior:contain;
 }
+dialog[open]{display:flex;flex-direction:column}
 dialog::backdrop{background:rgba(10,12,18,.55)}
-form{padding:20px}
-form h2{font-size:19px;margin:0 0 18px}
-form h2.tight{margin-bottom:6px}
+form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+.fhead{flex:none;padding:18px 20px 12px}
+.fhead h2{font-size:19px;margin:0}
+.fhead .hint{margin:6px 0 0}
+.fbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:8px 20px 4px}
 .field{margin-bottom:18px}
 .field>label,.field>.lbl{display:block;font-weight:600;margin-bottom:6px}
 .field[hidden]{display:none}
@@ -162,12 +181,21 @@ form h2.tight{margin-bottom:6px}
 }
 .imgprev img{width:100%;height:100%;object-fit:cover;display:block}
 .imgbtns{display:flex;flex-wrap:wrap;gap:8px}
-.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.foot{flex:none;display:flex;justify-content:flex-end;gap:8px;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
 
 @media (max-width:420px){
   .detail{padding-left:14px}
   .row-head{grid-template-columns:60px 1fr auto}
   .thumb{width:56px;height:56px}
+  .tabs{gap:14px}
+  .tab{font-size:14px}
+}
+@media (max-width:600px){
+  dialog{
+    width:100%;max-width:100%;max-height:none;height:var(--vh,100dvh);
+    margin:0;top:var(--vt,0px);bottom:auto;left:0;right:0;border-radius:0;
+  }
+  .fhead{padding-top:calc(14px + env(safe-area-inset-top))}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -181,8 +209,9 @@ form h2.tight{margin-bottom:6px}
 
   <nav class="tabs" aria-label="Списки">
     <button class="tab" type="button" data-tab="active" aria-pressed="true">Активные<span class="count" id="c-active"></span></button>
-    <button class="tab" type="button" data-tab="done" aria-pressed="false">Выполнены<span class="count" id="c-done"></span></button>
+    <button class="tab" type="button" data-tab="done" aria-pressed="false">Готово<span class="count" id="c-done"></span></button>
     <button class="tab" type="button" data-tab="later" aria-pressed="false">Хранилище<span class="count" id="c-later"></span></button>
+    <button class="tab" type="button" data-tab="notes" aria-pressed="false">Заметки<span class="count" id="c-notes"></span></button>
   </nav>
 
   <main id="list"></main>
@@ -200,9 +229,12 @@ form h2.tight{margin-bottom:6px}
 
 <dialog id="dlg" aria-labelledby="dlg-title">
   <form id="form" novalidate>
-    <h2 id="dlg-title">Новая цель</h2>
-    <p class="hint" id="dlg-note" hidden style="margin:-2px 0 16px"></p>
+    <div class="fhead">
+      <h2 id="dlg-title">Новая цель</h2>
+      <p class="hint" id="dlg-note" hidden></p>
+    </div>
 
+    <div class="fbody">
     <div class="field">
       <label for="f-title">Цель</label>
       <input type="text" id="f-title" maxlength="140" autocomplete="off" placeholder="Получить права категории B">
@@ -261,6 +293,7 @@ form h2.tight{margin-bottom:6px}
       <p class="hint">По ней цель будет узнаваться в списке.</p>
       <p class="err" id="e-img" aria-live="polite"></p>
     </div>
+    </div>
 
     <div class="foot">
       <button type="button" class="btn" id="cancel">Отмена</button>
@@ -301,6 +334,9 @@ const normLater = g => ({
   img: g.img ? String(g.img) : null, days: (+g.days > 0) ? Math.round(+g.days) : null, created: +g.created || Date.now()
 });
 
+const validNote = n => n && typeof n === 'object' && n.id != null && typeof n.text === 'string';
+const normNote = n => ({ id: String(n.id), text: String(n.text), pinned: !!n.pinned, created: +n.created || Date.now(), updated: +n.updated || +n.created || Date.now() });
+
 /* ---------- IndexedDB: goals + images ---------- */
 let db = null;
 const idb = {
@@ -336,6 +372,9 @@ const imgAll = () => new Promise((res, rej) => {
 /* ---------- state ---------- */
 let goals = [];
 let later = [];
+let notes = [];
+let noteDraft = '';
+let saveTimer = null;
 const imgs = new Map();            // id -> { blob, url }
 let tab = 'active';
 let openId = null;
@@ -353,7 +392,7 @@ function dropImg(id) {
 }
 function save() {
   if (!db) return Promise.resolve();
-  return idb.run('kv', 'readwrite', t => { const s = t.objectStore('kv'); s.put(goals, 'goals'); s.put(later, 'later'); })
+  return idb.run('kv', 'readwrite', t => { const s = t.objectStore('kv'); s.put(goals, 'goals'); s.put(later, 'later'); s.put(notes, 'notes'); })
     .catch(() => toast('Не удалось сохранить: хранилище браузера недоступно'));
 }
 
@@ -372,6 +411,8 @@ async function init() {
       goals = (Array.isArray(g) ? g : []).filter(validGoal).map(normGoal);
     }
     later = (Array.isArray(l) ? l : []).filter(validLater).map(normLater);
+    const nn = await kvGet('notes');
+    notes = (Array.isArray(nn) ? nn : []).filter(validNote).map(normNote);
 
     const all = await imgAll();
     const used = new Set([...goals, ...later].map(x => x.img).filter(Boolean));
@@ -471,6 +512,24 @@ function laterRowHTML(g) {
   </li>`;
 }
 
+function noteRowHTML(n) {
+  const open = openId === n.id;
+  const date = esc(fmtShort(iso(new Date(n.created))));
+  return `<li class="row" data-id="${esc(n.id)}">
+    <button type="button" class="note-head" data-act="toggle" aria-expanded="${open}">
+      ${open ? '' : `<span class="note-text">${n.text.trim() ? esc(n.text) : 'Пустая заметка'}</span>`}
+      <span class="meta"><span>${date}</span>${n.pinned ? '<span class="pin">закреплена</span>' : ''}</span>
+    </button>
+    ${open ? `<div class="detail wide">
+      <textarea data-noteedit maxlength="2000" aria-label="Текст заметки">${esc(n.text)}</textarea>
+      <div class="actions">
+        <button type="button" class="btn" data-act="pin">${n.pinned ? 'Открепить' : 'Закрепить'}</button>
+        <button type="button" class="btn danger" data-act="delete">Удалить</button>
+      </div>
+    </div>` : ''}
+  </li>`;
+}
+
 const emptyHTML = (title, text, btn) =>
   `<div class="empty"><h2>${title}</h2><p>${text}</p>${btn ? `<button type="button" class="btn primary" data-act="new">${btn}</button>` : ''}</div>`;
 
@@ -480,6 +539,8 @@ function render() {
   $('#c-active').textContent = act.length;
   $('#c-done').textContent = dn.length;
   $('#c-later').textContent = later.length;
+  $('#c-notes').textContent = notes.length;
+  $('#add').hidden = tab === 'notes';
   $('#add').textContent = tab === 'later' ? 'В хранилище' : 'Новая цель';
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
 
@@ -502,6 +563,13 @@ function render() {
       dn.sort((a, b) => b.doneAt - a.doneAt);
       el.innerHTML = `<section class="group"><h2>Выполнено</h2><ul class="list">${dn.map(g => rowHTML(g, '')).join('')}</ul></section>`;
     }
+  } else if (tab === 'notes') {
+    const sorted = [...notes].sort((a, b) => (b.pinned - a.pinned) || (b.updated - a.updated));
+    el.innerHTML = `<div class="compose">
+        <textarea id="note-new" maxlength="2000" placeholder="Что записать?" aria-label="Новая заметка">${esc(noteDraft)}</textarea>
+        <button type="button" class="btn primary" data-act="addnote" ${noteDraft.trim() ? '' : 'disabled'}>Добавить</button>
+      </div>` +
+      (sorted.length ? `<ul class="list">${sorted.map(noteRowHTML).join('')}</ul>` : '<p class="note">Заметок пока нет.</p>');
   } else {
     if (!later.length) {
       el.innerHTML = emptyHTML('Хранилище пусто', 'Записывай сюда цели на будущее: с шагами и картинкой. В основной список переноси по одной, когда будет место.', 'Добавить в хранилище');
@@ -512,6 +580,7 @@ function render() {
     }
   }
 
+  el.querySelectorAll('[data-noteedit]').forEach(autosize);
   if (focusNew) { focusNew = false; const i = el.querySelector('[data-newstep]'); if (i) i.focus(); }
 }
 
@@ -525,7 +594,7 @@ function toast(msg, undo) {
 }
 $('#toast').addEventListener('click', e => {
   if (!e.target.matches('[data-undo]') || !lastDeleted) return;
-  const arr = lastDeleted.list === 'later' ? later : goals;
+  const arr = lastDeleted.list === 'later' ? later : lastDeleted.list === 'notes' ? notes : goals;
   arr.splice(Math.min(lastDeleted.index, arr.length), 0, lastDeleted.item);
   lastDeleted = null; save(); render(); $('#toast').hidden = true;
 });
@@ -589,7 +658,7 @@ async function sendIcs(g) {
 }
 
 /* ---------- list interactions ---------- */
-const listNow = () => tab === 'later' ? later : goals;
+const listNow = () => tab === 'later' ? later : tab === 'notes' ? notes : goals;
 const goalOf = el => { const r = el.closest('.row'); return r ? listNow().find(g => g.id === r.dataset.id) : null; };
 
 function addStepInline(row) {
@@ -604,6 +673,7 @@ document.addEventListener('click', e => {
   const btn = e.target.closest('[data-act]'); if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'new') return openForm(tab === 'later' ? 'later' : 'goal');
+  if (act === 'addnote') return addNote();
   const g = goalOf(btn); if (!g) return;
 
   if (act === 'toggle') { openId = openId === g.id ? null : g.id; render(); }
@@ -613,16 +683,19 @@ document.addEventListener('click', e => {
   else if (act === 'addstep') addStepInline(btn.closest('.row'));
   else if (act === 'finish') { g.doneAt = Date.now(); openId = null; save(); render(); toast('Цель отмечена выполненной'); }
   else if (act === 'reopen') { g.doneAt = null; openId = null; save(); render(); toast('Цель вернулась в активные'); }
+  else if (act === 'pin') { g.pinned = !g.pinned; save(); render(); }
   else if (act === 'defer') {
     const dl = daysLeft(g.deadline);
     later.push({ id: g.id, title: g.title, result: g.result, steps: g.steps.map(s => ({ ...s })), img: g.img, days: dl > 0 ? dl : null, created: Date.now() });
     goals = goals.filter(x => x !== g); openId = null; save(); render(); toast('Цель ушла в хранилище');
   }
   else if (act === 'delete') {
-    const inLater = tab === 'later';
-    lastDeleted = { item: g, index: listNow().indexOf(g), list: inLater ? 'later' : 'goals' };
-    if (inLater) later = later.filter(x => x !== g); else goals = goals.filter(x => x !== g);
-    openId = null; save(); render(); toast('Цель удалена', true);
+    const key = tab === 'later' ? 'later' : tab === 'notes' ? 'notes' : 'goals';
+    lastDeleted = { item: g, index: listNow().indexOf(g), list: key };
+    if (key === 'later') later = later.filter(x => x !== g);
+    else if (key === 'notes') notes = notes.filter(x => x !== g);
+    else goals = goals.filter(x => x !== g);
+    openId = null; save(); render(); toast(key === 'notes' ? 'Заметка удалена' : 'Цель удалена', true);
   }
 });
 
@@ -634,6 +707,27 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.matches('[data-newstep]')) { e.preventDefault(); addStepInline(e.target.closest('.row')); }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'note-new') { e.preventDefault(); addNote(); }
+});
+
+/* ---------- notes ---------- */
+function addNote() {
+  const text = noteDraft.trim(); if (!text) return;
+  const now = Date.now();
+  notes.push({ id: uid(), text, pinned: false, created: now, updated: now });
+  noteDraft = ''; save(); render();
+}
+function autosize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); }
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'note-new') {
+    noteDraft = t.value;
+    const b = t.parentNode.querySelector('[data-act="addnote"]'); if (b) b.disabled = !t.value.trim();
+  } else if (t.matches('[data-noteedit]')) {
+    const n = goalOf(t); if (!n) return;
+    n.text = t.value; n.updated = Date.now(); autosize(t); scheduleSave();
+  }
 });
 document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; openId = null; render(); }));
 $('#add').addEventListener('click', () => openForm(tab === 'later' ? 'later' : 'goal'));
@@ -693,7 +787,7 @@ function openForm(mode, id) {
   origImg = src ? src.img : null;
   renderDraft(); renderImgPrev();
   ['title', 'result', 'deadline', 'img'].forEach(k => setErr(k, ''));
-  dlg.showModal();
+  lockScroll(); dlg.showModal(); fitDialog();
   $('#f-title').focus();
 }
 
@@ -744,10 +838,38 @@ $('#img-file').addEventListener('change', async e => {
 
 $('#cancel').addEventListener('click', () => dlg.close());
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
-dlg.addEventListener('close', () => { if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; } });
+dlg.addEventListener('close', () => { unlockScroll(); if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; } });
 
+/* экран не двигается за полями: фон заблокирован, диалог привязан к видимой области, крутится только тело формы */
+let lockY = 0, locked = false;
+function lockScroll() {
+  if (locked) return; locked = true;
+  lockY = window.scrollY; document.body.style.top = `-${lockY}px`;
+  document.documentElement.classList.add('modal-open');
+}
+function unlockScroll() {
+  if (!locked) return; locked = false;
+  document.documentElement.classList.remove('modal-open'); document.body.style.top = '';
+  window.scrollTo(0, lockY);
+}
+function fitDialog() {
+  const v = window.visualViewport; if (!v || !dlg.open) return;
+  dlg.style.setProperty('--vh', v.height + 'px'); dlg.style.setProperty('--vt', v.offsetTop + 'px');
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', fitDialog); visualViewport.addEventListener('scroll', fitDialog); }
+dlg.addEventListener('touchmove', e => { if (!e.target.closest('.fbody')) e.preventDefault(); }, { passive: false });
+dlg.addEventListener('focusin', e => {
+  if (e.target.matches('input,textarea')) setTimeout(() => { try { e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {} }, 300);
+});
+
+let busy = false;
 form.addEventListener('submit', async e => {
   e.preventDefault();
+  if (busy) return;
+  busy = true; $('#submit').disabled = true;
+  try { await submitForm(); } finally { busy = false; $('#submit').disabled = false; }
+});
+async function submitForm() {
   const title = $('#f-title').value.trim(), result = $('#f-result').value.trim(), deadline = $('#f-deadline').value;
   const daysRaw = parseInt($('#f-days').value, 10);
   const errs = {};
@@ -787,7 +909,7 @@ form.addEventListener('submit', async e => {
   }
   openId = id;
   await save(); dlg.close(); render(); toast(msg);
-});
+}
 
 /* ---------- export / import ---------- */
 const toDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
@@ -796,7 +918,7 @@ $('#export').addEventListener('click', async () => {
   try {
     const images = {};
     for (const g of [...goals, ...later]) { const im = g.img && imgs.get(g.img); if (im) images[g.img] = await toDataURL(im.blob); }
-    downloadBlob(new Blob([JSON.stringify({ version: 2, goals, later, images })], { type: 'application/json' }), `goals-${iso(new Date())}.json`);
+    downloadBlob(new Blob([JSON.stringify({ version: 3, goals, later, notes, images })], { type: 'application/json' }), `goals-${iso(new Date())}.json`);
   } catch (e) { toast('Не удалось сделать экспорт'); }
 });
 $('#import').addEventListener('click', () => $('#file').click());
@@ -807,6 +929,7 @@ $('#file').addEventListener('change', async e => {
     const isArr = Array.isArray(data);
     const gs = (isArr ? data : (data.goals || [])).filter(validGoal).map(normGoal);
     const ls = (isArr ? [] : (data.later || [])).filter(validLater).map(normLater);
+    const ns = (isArr ? [] : (data.notes || [])).filter(validNote).map(normNote);
     const images = (!isArr && data.images) || {};
     for (const id of Object.keys(images)) {
       const u = images[id];
@@ -815,8 +938,8 @@ $('#file').addEventListener('change', async e => {
       await imgPut(id, blob); addImg(id, blob);
     }
     const merge = (arr, items) => items.forEach(g => { const i = arr.findIndex(x => x.id === g.id); if (i >= 0) arr[i] = g; else arr.push(g); });
-    merge(goals, gs); merge(later, ls);
-    await save(); render(); toast(`Импортировано: ${gs.length + ls.length}`);
+    merge(goals, gs); merge(later, ls); merge(notes, ns);
+    await save(); render(); toast(`Импортировано: ${gs.length + ls.length + ns.length}`);
   } catch (err) { toast('Файл не подходит: нужен JSON, выгруженный из этого приложения'); }
 });
 
@@ -833,7 +956,11 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
-document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(saveTimer); save(); } else render(); });
+
+/* без масштабирования: пинч и двойной тап */
+['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, e => e.preventDefault()));
+document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
 init();
 })();
