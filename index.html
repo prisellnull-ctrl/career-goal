@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Цели</title>
+<meta name="theme-color" content="#F1F2F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12151C" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Цели">
+<style>
+:root{
+  --bg:#F1F2F4; --surface:#FFFFFF; --ink:#171B26; --ink2:#5A6272; --line:#DADDE3;
+  --accent:#2F4BE0; --on-accent:#FFFFFF; --late:#C2372F; --done:#2C7A55; --track:#E3E6EB;
+  --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12151C; --surface:#1A1F29; --ink:#E7E9EE; --ink2:#9AA2B1; --line:#2A3040;
+    --accent:#8299FF; --on-accent:#0E1220; --late:#FF7B72; --done:#5CC79A; --track:#2A3040;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 120px}
+
+header{
+  position:sticky;top:0;z-index:5;background:var(--bg);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0 10px;
+}
+h1{font-size:26px;line-height:1.1;letter-spacing:-.015em;margin:0;font-weight:700}
+
+.btn{
+  border:1px solid var(--line);background:var(--surface);border-radius:8px;
+  padding:0 14px;min-height:44px;cursor:pointer;
+}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.btn.danger{color:var(--late)}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px}
+.btn.link{border:0;background:none;padding:0 4px;color:var(--ink2);min-height:36px;text-decoration:underline;text-underline-offset:3px}
+
+.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line)}
+.tab{
+  background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+  padding:10px 0;min-height:44px;color:var(--ink2);cursor:pointer;
+}
+.tab[aria-pressed="true"]{color:var(--ink);border-color:var(--ink);font-weight:600}
+.count{font-variant-numeric:tabular-nums;color:var(--ink2);font-weight:400;margin-left:4px}
+
+.group{margin-top:22px}
+.group h2{font-size:14px;font-weight:600;color:var(--ink2);margin:0 0 8px}
+.group.late h2{color:var(--late)}
+.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.row{border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row-head{
+  display:grid;grid-template-columns:68px 1fr;width:100%;padding:0;text-align:left;
+  background:none;border:0;cursor:pointer;
+}
+.row-head:focus-visible{outline-offset:-2px}
+.days{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 4px;border-right:1px solid var(--line);
+}
+.days b{font-size:26px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.days small{font-size:11px;color:var(--ink2);margin-top:5px}
+.late .days b{color:var(--late)}
+.late .days small{color:var(--late)}
+.is-done .days b{color:var(--done)}
+.main{display:block;padding:13px 14px;min-width:0}
+.title{display:block;font-size:16px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.is-done .title{color:var(--ink2)}
+.result{
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  color:var(--ink2);font-size:14px;margin-top:2px;
+}
+.meta{display:flex;align-items:center;gap:12px;margin-top:9px;font-size:13px;color:var(--ink2)}
+.bar{flex:0 1 110px;height:4px;background:var(--track);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.nums{font-variant-numeric:tabular-nums}
+
+.detail{padding:0 14px 14px 82px}
+.kv{font-size:14px;margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.kv span{display:block;font-size:13px;color:var(--ink2)}
+.steps{list-style:none;margin:6px 0 0;padding:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+.steps input[type=checkbox]{width:22px;height:22px;flex:none;margin:0;accent-color:var(--accent);cursor:pointer}
+.steps label{flex:1;padding-top:1px;overflow-wrap:anywhere;cursor:pointer}
+.steps .off label{color:var(--ink2);text-decoration:line-through}
+.addstep{display:flex;gap:8px;margin-top:8px}
+.addstep input{flex:1;min-width:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+
+input[type=text],input[type=date],textarea{
+  width:100%;font-size:16px;padding:10px 12px;min-height:44px;
+  border:1px solid var(--line);border-radius:8px;background:var(--bg);
+}
+textarea{min-height:76px;resize:vertical}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{border-color:var(--accent)}
+
+.empty{padding:56px 8px;text-align:center}
+.empty h2{font-size:18px;margin:0 0 6px}
+.empty p{max-width:34ch;margin:0 auto 18px;color:var(--ink2)}
+
+footer{margin-top:40px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--ink2)}
+footer p{flex-basis:100%;margin:0 0 4px}
+footer[hidden],#install[hidden]{display:none}
+
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);z-index:20;
+  bottom:calc(20px + env(safe-area-inset-bottom));max-width:calc(100vw - 32px);
+  display:flex;align-items:center;gap:14px;padding:11px 16px;border-radius:10px;
+  background:var(--ink);color:var(--bg);font-size:14px;
+}
+.toast[hidden]{display:none}
+.toast button{background:none;border:0;padding:6px 0;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600}
+
+dialog{
+  border:0;padding:0;border-radius:14px;background:var(--surface);color:var(--ink);
+  width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.3);
+}
+dialog::backdrop{background:rgba(10,12,18,.55)}
+form{padding:20px}
+form h2{font-size:19px;margin:0 0 18px}
+.field{margin-bottom:18px}
+.field>label,.field>.lbl{display:block;font-weight:600;margin-bottom:6px}
+.hint{font-size:13px;color:var(--ink2);margin:5px 0 0}
+.err{font-size:13px;color:var(--late);margin:5px 0 0;min-height:0}
+.err:empty{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px solid var(--line);border-radius:999px;background:none;color:var(--ink2);padding:0 12px;min-height:34px;font-size:13px;cursor:pointer}
+.draft{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
+.draft li{display:flex;gap:6px}
+.draft input{flex:1;min-width:0}
+.icon{flex:none;width:44px;min-height:44px;border:0;background:none;color:var(--ink2);font-size:22px;line-height:1;cursor:pointer;border-radius:8px}
+.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+
+@media (max-width:420px){
+  .detail{padding-left:14px}
+  .row-head{grid-template-columns:60px 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Цели</h1>
+    <button class="btn primary" id="add" type="button">Новая цель</button>
+  </header>
+
+  <nav class="tabs" aria-label="Список целей">
+    <button class="tab" type="button" data-tab="active" aria-pressed="true">Активные<span class="count" id="c-active"></span></button>
+    <button class="tab" type="button" data-tab="done" aria-pressed="false">Выполнены<span class="count" id="c-done"></span></button>
+  </nav>
+
+  <main id="list"></main>
+
+  <footer>
+    <p>Данные хранятся только на этом устройстве. Для переноса используй экспорт.</p>
+    <button class="btn link" id="export" type="button">Экспорт</button>
+    <button class="btn link" id="import" type="button">Импорт</button>
+    <button class="btn link" id="install" type="button" hidden>Установить приложение</button>
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<input type="file" id="file" accept="application/json,.json" hidden>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <form id="form" novalidate>
+    <h2 id="dlg-title">Новая цель</h2>
+
+    <div class="field">
+      <label for="f-title">Цель</label>
+      <input type="text" id="f-title" name="title" maxlength="140" autocomplete="off" placeholder="Получить права категории B">
+      <p class="err" id="e-title" aria-live="polite"></p>
+    </div>
+
+    <div class="field">
+      <label for="f-result">Как пойму, что цель достигнута</label>
+      <textarea id="f-result" name="result" maxlength="400" placeholder="Сдал экзамен в ГИБДД, права на руках"></textarea>
+      <p class="hint">Число, факт или дата, которые можно проверить. «Стать лучше» не подходит.</p>
+      <p class="err" id="e-result" aria-live="polite"></p>
+    </div>
+
+    <div class="field">
+      <label for="f-deadline">Срок</label>
+      <input type="date" id="f-deadline" name="deadline">
+      <div class="chips" id="chips">
+        <button type="button" class="chip" data-days="14">2 недели</button>
+        <button type="button" class="chip" data-months="1">1 месяц</button>
+        <button type="button" class="chip" data-months="3">3 месяца</button>
+        <button type="button" class="chip" data-months="6">6 месяцев</button>
+      </div>
+      <p class="err" id="e-deadline" aria-live="polite"></p>
+    </div>
+
+    <div class="field">
+      <span class="lbl" id="steps-lbl">Шаги</span>
+      <ul class="draft" id="draft" aria-labelledby="steps-lbl"></ul>
+      <button type="button" class="btn small" id="add-draft">Добавить шаг</button>
+      <p class="hint">Каждый шаг — действие на один заход. Первый лучше сделать сегодня.</p>
+    </div>
+
+    <div class="foot">
+      <button type="button" class="btn" id="cancel">Отмена</button>
+      <button type="submit" class="btn primary">Сохранить цель</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+
+const KEY = 'goals.v1';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+const daysLeft = s => Math.round((parse(s) - today()) / 86400000);
+const plural = (n, [a, b, c]) => { n = Math.abs(n); const m10 = n % 10, m100 = n % 100; return (m100 > 10 && m100 < 15) ? c : m10 === 1 ? a : (m10 > 1 && m10 < 5) ? b : c; };
+const fmtShort = s => { const d = parse(s); const o = { day: 'numeric', month: 'short' }; if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric'; return d.toLocaleDateString('ru-RU', o); };
+const fmtLong = s => parse(s).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+/* ---------- storage ---------- */
+const valid = g => g && typeof g === 'object' && g.id != null && typeof g.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(g.deadline || '');
+const norm = g => ({
+  id: String(g.id), title: String(g.title), result: String(g.result || ''), deadline: g.deadline,
+  steps: (Array.isArray(g.steps) ? g.steps : []).map(s => ({ id: String(s.id || uid()), text: String(s.text || ''), done: !!s.done })),
+  created: +g.created || Date.now(), doneAt: g.doneAt ? +g.doneAt : null
+});
+function load() {
+  try { const a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a.filter(valid).map(norm) : []; }
+  catch (e) { return []; }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(goals)); }
+  catch (e) { toast('Не удалось сохранить: хранилище браузера недоступно'); }
+}
+
+/* ---------- state ---------- */
+let goals = load();
+let tab = 'active';
+let openId = null;
+let focusNew = false;
+let lastDeleted = null;
+let toastTimer = null;
+
+const prog = g => { const t = g.steps.length, d = g.steps.filter(s => s.done).length; return { t, d, pct: t ? Math.round(d / t * 100) : 0 }; };
+
+/* ---------- render ---------- */
+const BUCKETS = [
+  ['late',  'Просрочено',        d => d < 0],
+  ['week',  'Ближайшие 7 дней',  d => d <= 7],
+  ['month', 'До 30 дней',        d => d <= 30],
+  ['later', 'Позже',             () => true]
+];
+
+function rowHTML(g, cls) {
+  const done = !!g.doneAt, dl = daysLeft(g.deadline), p = prog(g), open = openId === g.id;
+  let num, lab;
+  if (done) { num = '✓'; lab = 'готово'; }
+  else if (dl < 0) { num = '−' + (-dl); lab = 'просрочено'; }
+  else if (dl === 0) { num = '0'; lab = 'сегодня'; }
+  else { num = dl; lab = plural(dl, ['день', 'дня', 'дней']); }
+
+  const meta = `<span class="meta"><span>${done ? 'выполнено ' + esc(fmtShort(iso(new Date(g.doneAt)))) : 'до ' + esc(fmtShort(g.deadline))}</span>` +
+    (p.t ? `<span class="bar" aria-hidden="true"><i style="width:${p.pct}%"></i></span><span class="nums">${p.d} из ${p.t}</span>` : '') + `</span>`;
+
+  let detail = '';
+  if (open) {
+    const steps = g.steps.map(s =>
+      `<li class="${s.done ? 'off' : ''}"><input type="checkbox" id="s-${esc(s.id)}" data-step="${esc(s.id)}" ${s.done ? 'checked' : ''}><label for="s-${esc(s.id)}">${esc(s.text)}</label></li>`).join('');
+    detail = `<div class="detail">
+      ${g.result ? `<p class="kv"><span>Результат</span>${esc(g.result)}</p>` : ''}
+      <p class="kv"><span>Срок</span>${esc(fmtLong(g.deadline))}</p>
+      ${g.steps.length ? `<ul class="steps">${steps}</ul>` : ''}
+      ${done ? '' : `<div class="addstep"><input type="text" data-newstep maxlength="140" placeholder="Новый шаг" aria-label="Новый шаг"><button type="button" class="btn small" data-act="addstep">Добавить</button></div>`}
+      <div class="actions">
+        ${done
+          ? `<button type="button" class="btn" data-act="reopen">Вернуть в работу</button>`
+          : `<button type="button" class="btn primary" data-act="finish">Цель достигнута</button><button type="button" class="btn" data-act="edit">Изменить</button>`}
+        <button type="button" class="btn danger" data-act="delete">Удалить</button>
+      </div>
+    </div>`;
+  }
+
+  return `<li class="row ${cls}${done ? ' is-done' : ''}" data-id="${esc(g.id)}">
+    <button type="button" class="row-head" data-act="toggle" aria-expanded="${open}">
+      <span class="days"><b>${num}</b><small>${lab}</small></span>
+      <span class="main">
+        <span class="title">${esc(g.title)}</span>
+        ${g.result ? `<span class="result">${esc(g.result)}</span>` : ''}
+        ${meta}
+      </span>
+    </button>${detail}
+  </li>`;
+}
+
+const emptyHTML = (title, text, btn) =>
+  `<div class="empty"><h2>${title}</h2><p>${text}</p>${btn ? '<button type="button" class="btn primary" data-act="new">Добавить цель</button>' : ''}</div>`;
+
+function render() {
+  const act = goals.filter(g => !g.doneAt);
+  const dn = goals.filter(g => g.doneAt);
+  $('#c-active').textContent = act.length;
+  $('#c-done').textContent = dn.length;
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
+
+  const el = $('#list');
+  if (tab === 'active') {
+    if (!act.length) {
+      el.innerHTML = goals.length
+        ? emptyHTML('Активных целей нет', 'Добавь следующую: что именно, как проверить результат и к какому сроку.', true)
+        : emptyHTML('Пока нет целей', 'Хорошая цель отвечает на три вопроса: что именно, как проверить результат и к какому сроку.', true);
+    } else {
+      act.sort((a, b) => a.deadline.localeCompare(b.deadline) || a.created - b.created);
+      const groups = BUCKETS.map(([cls, name, test]) => ({ cls, name, items: [] }));
+      act.forEach(g => { const d = daysLeft(g.deadline); groups[BUCKETS.findIndex(b => b[2](d))].items.push(g); });
+      el.innerHTML = groups.filter(x => x.items.length).map(x =>
+        `<section class="group ${x.cls}"><h2>${x.name}</h2><ul class="list">${x.items.map(g => rowHTML(g, x.cls)).join('')}</ul></section>`).join('');
+    }
+  } else {
+    if (!dn.length) el.innerHTML = emptyHTML('Выполненных целей пока нет', 'Здесь появятся цели, которые ты отметишь как достигнутые.', false);
+    else {
+      dn.sort((a, b) => b.doneAt - a.doneAt);
+      el.innerHTML = `<section class="group"><h2>Выполнено</h2><ul class="list">${dn.map(g => rowHTML(g, '')).join('')}</ul></section>`;
+    }
+  }
+
+  if (focusNew) { focusNew = false; const i = el.querySelector('[data-newstep]'); if (i) i.focus(); }
+}
+
+/* ---------- toast ---------- */
+function toast(msg, undo) {
+  const t = $('#toast');
+  t.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button type="button" data-undo>Вернуть</button>' : ''}`;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; lastDeleted = null; }, 6000);
+}
+$('#toast').addEventListener('click', e => {
+  if (!e.target.matches('[data-undo]') || !lastDeleted) return;
+  goals.splice(Math.min(lastDeleted.index, goals.length), 0, lastDeleted.goal);
+  lastDeleted = null; save(); render(); $('#toast').hidden = true;
+});
+
+/* ---------- list interactions ---------- */
+const goalOf = el => { const r = el.closest('.row'); return r ? goals.find(g => g.id === r.dataset.id) : null; };
+
+function addStepInline(row) {
+  const g = goalOf(row); const input = row.querySelector('[data-newstep]');
+  if (!g || !input) return;
+  const text = input.value.trim(); if (!text) return;
+  g.steps.push({ id: uid(), text, done: false });
+  save(); focusNew = true; render();
+}
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const act = btn.dataset.act, g = goalOf(btn);
+  if (act === 'new') return openForm();
+  if (!g) return;
+  if (act === 'toggle') { openId = openId === g.id ? null : g.id; render(); }
+  else if (act === 'edit') openForm(g.id);
+  else if (act === 'addstep') addStepInline(btn.closest('.row'));
+  else if (act === 'finish') { g.doneAt = Date.now(); openId = null; save(); render(); toast('Цель отмечена выполненной'); }
+  else if (act === 'reopen') { g.doneAt = null; openId = null; save(); render(); toast('Цель вернулась в активные'); }
+  else if (act === 'delete') {
+    lastDeleted = { goal: g, index: goals.indexOf(g) };
+    goals = goals.filter(x => x !== g); openId = null; save(); render(); toast('Цель удалена', true);
+  }
+});
+
+document.addEventListener('change', e => {
+  if (!e.target.matches('[data-step]')) return;
+  const g = goalOf(e.target); if (!g) return;
+  const s = g.steps.find(x => x.id === e.target.dataset.step); if (!s) return;
+  s.done = e.target.checked; save(); render();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches('[data-newstep]')) { e.preventDefault(); addStepInline(e.target.closest('.row')); }
+});
+
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; openId = null; render(); }));
+$('#add').addEventListener('click', () => openForm());
+
+/* ---------- form ---------- */
+const dlg = $('#dlg'), form = $('#form');
+let editingId = null, draft = [];
+
+function renderDraft() {
+  $('#draft').innerHTML = draft.map((s, i) =>
+    `<li><input type="text" value="${esc(s.text)}" data-i="${i}" maxlength="140" placeholder="Что сделать за один заход" aria-label="Шаг ${i + 1}"><button type="button" class="icon" data-rm="${i}" aria-label="Удалить шаг ${i + 1}">×</button></li>`).join('');
+}
+function setErr(id, msg) { $('#e-' + id).textContent = msg || ''; }
+
+function openForm(id) {
+  editingId = id || null;
+  const g = goals.find(x => x.id === id);
+  $('#dlg-title').textContent = g ? 'Изменить цель' : 'Новая цель';
+  $('#f-title').value = g ? g.title : '';
+  $('#f-result').value = g ? g.result : '';
+  $('#f-deadline').value = g ? g.deadline : '';
+  draft = g ? g.steps.map(s => ({ ...s })) : [];
+  renderDraft(); ['title', 'result', 'deadline'].forEach(k => setErr(k, ''));
+  dlg.showModal();
+  $('#f-title').focus();
+}
+
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  const d = today();
+  if (c.dataset.days) d.setDate(d.getDate() + Number(c.dataset.days));
+  if (c.dataset.months) d.setMonth(d.getMonth() + Number(c.dataset.months));
+  $('#f-deadline').value = iso(d); setErr('deadline', '');
+});
+
+$('#draft').addEventListener('input', e => { if (e.target.matches('[data-i]')) draft[+e.target.dataset.i].text = e.target.value; });
+$('#draft').addEventListener('click', e => {
+  const rm = e.target.closest('[data-rm]'); if (!rm) return;
+  draft.splice(+rm.dataset.rm, 1); renderDraft();
+});
+$('#draft').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches('[data-i]')) { e.preventDefault(); if (e.target.value.trim()) addDraft(); }
+});
+function addDraft() {
+  draft.push({ id: uid(), text: '', done: false }); renderDraft();
+  const inputs = $('#draft').querySelectorAll('input'); inputs[inputs.length - 1].focus();
+}
+$('#add-draft').addEventListener('click', addDraft);
+$('#cancel').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const title = $('#f-title').value.trim(), result = $('#f-result').value.trim(), deadline = $('#f-deadline').value;
+  const errs = {};
+  if (!title) errs.title = 'Напиши, что именно нужно получить.';
+  if (!result) errs.result = 'Опиши, как проверить результат: число, факт или дату.';
+  if (!deadline) errs.deadline = 'Выбери срок.';
+  ['title', 'result', 'deadline'].forEach(k => setErr(k, errs[k]));
+  const first = Object.keys(errs)[0];
+  if (first) { $('#f-' + first).focus(); return; }
+
+  const steps = draft.map(s => ({ ...s, text: s.text.trim() })).filter(s => s.text);
+  let id = editingId;
+  if (editingId) {
+    const g = goals.find(x => x.id === editingId);
+    if (g) Object.assign(g, { title, result, deadline, steps });
+  } else {
+    id = uid();
+    goals.push({ id, title, result, deadline, steps, created: Date.now(), doneAt: null });
+  }
+  tab = 'active'; openId = id;
+  save(); dlg.close(); render(); toast('Цель сохранена');
+});
+
+/* ---------- export / import ---------- */
+$('#export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify({ version: 1, goals }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `goals-${iso(new Date())}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$('#import').addEventListener('click', () => $('#file').click());
+$('#file').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    const arr = (Array.isArray(data) ? data : data.goals).filter(valid).map(norm);
+    arr.forEach(g => { const i = goals.findIndex(x => x.id === g.id); if (i >= 0) goals[i] = g; else goals.push(g); });
+    save(); render(); toast(`Импортировано целей: ${arr.length}`);
+  } catch (err) { toast('Файл не подходит: нужен JSON, выгруженный из этого приложения'); }
+});
+
+/* ---------- PWA ---------- */
+let deferred = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#install').hidden = false; });
+$('#install').addEventListener('click', async () => {
+  if (!deferred) return;
+  deferred.prompt(); try { await deferred.userChoice; } catch (e) {}
+  deferred = null; $('#install').hidden = true;
+});
+window.addEventListener('appinstalled', () => { $('#install').hidden = true; });
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+
+render();
+})();
+</script>
+</body>
+</html>
